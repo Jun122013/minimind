@@ -8,7 +8,6 @@ on:
     branches:
       - master
       - main
-      - cursor/jobs-shadowing-english-trainer-b8da
     paths:
       - "jobs-shadow/**"
       - ".github/workflows/jobs-shadow-pages.yml"
@@ -35,6 +34,10 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Auto-enable Pages (build type = GitHub Actions) so you don't have
+          # to toggle anything in Settings. Runs on the default branch.
+          enablement: true
 
       - name: Upload jobs-shadow as the site
         uses: actions/upload-pages-artifact@v3

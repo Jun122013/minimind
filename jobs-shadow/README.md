@@ -16,18 +16,22 @@
 
 > 关键纪律：**同一个片段至少练一周**；**每次必录音对比**。进步来自重复到肌肉记忆，不是数量。
 
-## 📱 在手机上用（推荐 · GitHub Pages）
+## 📱 在手机上用（推荐 · GitHub Pages，无需进设置页）
 
-手机录音需要 **HTTPS**，所以最省事的办法是把它挂到 GitHub Pages，得到一个手机能直接打开的网址。仓库里已带好自动部署工作流（`.github/workflows/jobs-shadow-pages.yml`），你只需在 GitHub 上开一次开关：
+这是 **GitHub**（不是 GitLab）。手机录音需要 **HTTPS**，所以把它挂到 GitHub Pages 得到一个手机能直接打开的网址即可。仓库里已带好自动部署工作流（`.github/workflows/jobs-shadow-pages.yml`），并且**会自动开启 Pages**（`enablement: true`），所以你**不用去找 Settings→Pages 那个页面**（GitHub 手机 App 里本来也没有它）。
 
-1. 打开仓库 **Settings → Pages**。
-2. **Build and deployment → Source** 选 **GitHub Actions**，保存。
-3. 让部署跑起来：把本分支**合并进 `master`**（合并后自动部署），或在 **Actions** 里手动 **Run workflow**。
-   - 若从非默认分支部署被拦：**Settings → Environments → `github-pages` → Deployment branches** 里把本分支加进允许列表，或直接合并到 `master`。
-4. 部署成功后，网址是：**`https://jun122013.github.io/minimind/`**（在 Actions 运行详情 / Settings → Pages 顶部也能看到实际链接）。
-5. 手机浏览器打开这个网址即可；第一次录音会弹麦克风授权，点允许。**建议 iPhone 用 Safari、安卓用 Chrome。**
+**最简单的办法（手机 App 就能做）：把这个 PR 合并进 `master`。**
 
-> 提示：把网址"添加到主屏幕"，就像一个 App 一样天天点开练。
+1. 在 GitHub App 里打开本 PR → 点 **Merge**（合并）。
+2. 合并会自动触发部署：工作流在 `master` 上运行，自动开启 Pages 并发布。
+3. 约 1–2 分钟后，手机浏览器打开：**`https://jun122013.github.io/minimind/`**
+4. 第一次录音会弹麦克风授权，点允许。**iPhone 用 Safari，安卓用 Chrome。**
+
+> 想改用网页版操作也行（手机浏览器登录后可直达）：
+> - Pages 设置：<https://github.com/Jun122013/minimind/settings/pages>（找不到就点浏览器菜单「请求桌面网站」）
+> - Actions（看部署进度/手动触发）：<https://github.com/Jun122013/minimind/actions>
+>
+> 部署成功后，把网址"添加到主屏幕"，就像一个 App 一样天天点开练。
 
 ## 在电脑上用（本地）
 
