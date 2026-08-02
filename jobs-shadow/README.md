@@ -16,9 +16,22 @@
 
 > 关键纪律：**同一个片段至少练一周**；**每次必录音对比**。进步来自重复到肌肉记忆，不是数量。
 
-## 快速开始
+## 📱 在手机上用（推荐 · GitHub Pages）
 
-因为录音需要麦克风、需要"安全上下文"，**推荐用本地服务器打开**（否则部分浏览器会禁用麦克风）：
+手机录音需要 **HTTPS**，所以最省事的办法是把它挂到 GitHub Pages，得到一个手机能直接打开的网址。仓库里已带好自动部署工作流（`.github/workflows/jobs-shadow-pages.yml`），你只需在 GitHub 上开一次开关：
+
+1. 打开仓库 **Settings → Pages**。
+2. **Build and deployment → Source** 选 **GitHub Actions**，保存。
+3. 让部署跑起来：把本分支**合并进 `master`**（合并后自动部署），或在 **Actions** 里手动 **Run workflow**。
+   - 若从非默认分支部署被拦：**Settings → Environments → `github-pages` → Deployment branches** 里把本分支加进允许列表，或直接合并到 `master`。
+4. 部署成功后，网址是：**`https://jun122013.github.io/minimind/`**（在 Actions 运行详情 / Settings → Pages 顶部也能看到实际链接）。
+5. 手机浏览器打开这个网址即可；第一次录音会弹麦克风授权，点允许。**建议 iPhone 用 Safari、安卓用 Chrome。**
+
+> 提示：把网址"添加到主屏幕"，就像一个 App 一样天天点开练。
+
+## 在电脑上用（本地）
+
+因为录音需要"安全上下文"，本地请用服务器方式打开（否则部分浏览器会禁用麦克风）：
 
 ```bash
 cd jobs-shadow
@@ -28,6 +41,12 @@ python3 -m http.server 8080
 然后浏览器访问 <http://localhost:8080> 。
 
 > 只想看界面、不录音的话，直接双击 `index.html` 也能用（但录音可能被浏览器拦截）。
+
+## 手机兼容性说明
+
+- **iPhone / Safari**：录音用的是 `MediaRecorder`，工具会自动选 Safari 支持的 `audio/mp4` 格式（不再写死 `webm`），录完可回放/下载为 `.m4a`。
+- **YouTube 模式**：手机上 YouTube 播放需要你点一下播放（浏览器的自动播放限制），之后变速/循环正常。
+- 若手机上录音没反应：确认你用的是 **https 网址**（不是别人电脑的 `localhost`），且已授予麦克风权限。
 
 ## 载入 1995 访谈
 

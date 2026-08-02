@@ -155,3 +155,31 @@ select { flex: 0 0 auto; }
 .seg-edit textarea { width: 100%; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 10px; font-size: 14px; font-family: inherit; min-height: 70px; resize: vertical; }
 .seg-edit .del { color: #ff8a6b; border-color: rgba(255,107,61,.4); }
 .seg-edit input[type=number]{ max-width: 120px; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 640px) {
+  .topbar { padding: 10px 14px; gap: 12px; }
+  .brand-title { font-size: 16px; }
+  .brand-sub { font-size: 10px; letter-spacing: 1px; }
+  .session-box { margin-left: auto; }
+  .stopwatch { font-size: 17px; min-width: 52px; }
+  .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding-bottom: 2px; }
+  .tab { flex: 0 0 auto; padding: 8px 14px; }
+  main { padding: 14px; }
+  .grid { gap: 14px; }
+  .col { gap: 14px; }
+  .card { padding: 13px 14px; }
+  .nudge { margin: 10px 14px 0; font-size: 13px; }
+  .transcript { font-size: 17px; line-height: 1.65; }
+  .controls { gap: 14px; }
+  /* Make primary tap targets comfortable on touch */
+  .btn { padding: 11px 14px; }
+  .transport .btn { flex: 1 1 auto; text-align: center; }
+  .seg-time { width: 100%; margin-left: 0; margin-top: 4px; }
+  .speeds button { padding: 8px 11px; }
+  .stat-num { font-size: 28px; }
+  .row label { min-width: 90px; }
+}
+@media (max-width: 380px) {
+  .transport .btn { flex: 1 1 46%; }
+}

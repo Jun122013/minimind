@@ -242,11 +242,26 @@
   let audioCtx = null, analyser = null, micStream = null, rafId = null;
   const scope = $("#scope"), sctx = scope.getContext("2d");
 
+  // Pick a MediaRecorder mime type the current browser actually supports.
+  // iOS Safari does not support audio/webm — it records audio/mp4.
+  function pickMime() {
+    const cands = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/aac", "audio/ogg"];
+    if (window.MediaRecorder && MediaRecorder.isTypeSupported) {
+      for (const t of cands) { if (MediaRecorder.isTypeSupported(t)) return t; }
+    }
+    return ""; // let the browser choose its default
+  }
+
   async function ensureMic() {
-    if (micStream) return true;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("此环境不支持录音。请通过 HTTPS 链接（或 http://localhost）打开页面。手机上请用本工具的 GitHub Pages 链接（见 README）。");
+      return false;
+    }
+    if (micStream) { if (audioCtx && audioCtx.state === "suspended") await audioCtx.resume(); return true; }
     try {
       micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") await audioCtx.resume(); // iOS needs resume after a user gesture
       const src = audioCtx.createMediaStreamSource(micStream);
       analyser = audioCtx.createAnalyser();
       analyser.fftSize = 2048;
@@ -254,7 +269,7 @@
       drawScope();
       return true;
     } catch (e) {
-      alert("无法访问麦克风。请用 http://localhost 方式打开（见 README），并允许麦克风权限。");
+      alert("无法访问麦克风。手机/浏览器需通过 HTTPS 打开并授予麦克风权限（本地电脑用 http://localhost）。");
       return false;
     }
   }
@@ -305,14 +320,18 @@
     return (f > 60 && f < 500) ? f : -1;
   }
 
+  let recMime = "audio/webm";
   $("#recBtn").addEventListener("click", async () => {
     if (mediaRecorder && mediaRecorder.state === "recording") { mediaRecorder.stop(); return; }
     if (!(await ensureMic())) return;
     recChunks = [];
-    mediaRecorder = new MediaRecorder(micStream);
+    const mime = pickMime();
+    try { mediaRecorder = mime ? new MediaRecorder(micStream, { mimeType: mime }) : new MediaRecorder(micStream); }
+    catch (e) { mediaRecorder = new MediaRecorder(micStream); }
+    recMime = mediaRecorder.mimeType || mime || "audio/webm";
     mediaRecorder.ondataavailable = (e) => { if (e.data.size) recChunks.push(e.data); };
     mediaRecorder.onstop = () => {
-      recBlob = new Blob(recChunks, { type: "audio/webm" });
+      recBlob = new Blob(recChunks, { type: recMime.split(";")[0] });
       if (recUrl) URL.revokeObjectURL(recUrl);
       recUrl = URL.createObjectURL(recBlob);
       ["#playRec", "#compareBtn", "#dlRec"].forEach((s) => ($(s).disabled = false));
@@ -329,8 +348,9 @@
   $("#playRec").addEventListener("click", () => { if (recUrl) { recAudio.src = recUrl; recAudio.playbackRate = 1; recAudio.play(); } });
   $("#dlRec").addEventListener("click", () => {
     if (!recUrl) return;
+    const ext = recMime.includes("mp4") || recMime.includes("aac") ? "m4a" : recMime.includes("ogg") ? "ogg" : "webm";
     const a = document.createElement("a");
-    a.href = recUrl; a.download = `jobsshadow_${currentSegment().id}_${todayKey()}.webm`; a.click();
+    a.href = recUrl; a.download = `jobsshadow_${currentSegment().id}_${todayKey()}.${ext}`; a.click();
   });
   $("#compareBtn").addEventListener("click", () => {
     const seg = currentSegment();
