@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobsShadow · 乔布斯 1995 影子跟读训练器</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b0b0d'/%3E%3Ctext x='50' y='72' font-size='64' text-anchor='middle' fill='%23f3f3f4'%3E%E2%97%90%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◐</span>
+      <div>
+        <div class="brand-title">JobsShadow</div>
+        <div class="brand-sub">Steve Jobs · 1995 · Shadowing Trainer</div>
+      </div>
+    </div>
+    <div class="session-box">
+      <div class="stopwatch" id="stopwatch">00:00</div>
+      <button class="btn btn-primary" id="sessionBtn">开始训练</button>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="practice">练习</button>
+      <button class="tab" data-tab="dashboard">进度</button>
+      <button class="tab" data-tab="segments">片段</button>
+      <button class="tab" data-tab="settings">设置</button>
+    </nav>
+  </header>
+
+  <!-- streak nudge banner -->
+  <div class="nudge" id="nudge" hidden></div>
+
+  <main>
+    <!-- ===================== PRACTICE ===================== -->
+    <section class="view" id="view-practice">
+      <div class="grid">
+        <!-- Left: player + segment -->
+        <div class="col">
+          <div class="card">
+            <div class="card-head">
+              <h2>音源</h2>
+              <div class="src-toggle">
+                <button class="chip active" id="srcYouTube">YouTube</button>
+                <button class="chip" id="srcLocal">本地文件</button>
+              </div>
+            </div>
+
+            <div id="youtubePane">
+              <div class="row">
+                <input type="text" id="ytInput" placeholder="粘贴 1995 访谈的 YouTube 链接或视频 ID" />
+                <button class="btn" id="ytLoad">载入</button>
+              </div>
+              <a class="hint-link" id="ytSearch" target="_blank" rel="noopener">在 YouTube 搜索 “Steve Jobs 1995 interview taste”</a>
+              <div class="player-wrap" id="ytPlayerWrap">
+                <div id="ytplayer"></div>
+              </div>
+            </div>
+
+            <div id="localPane" hidden>
+              <div class="row">
+                <input type="file" id="fileInput" accept="audio/*,video/*" />
+              </div>
+              <video id="localMedia" controls playsinline></video>
+              <p class="tiny">提示：本地文件模式完全离线可用。你可以把访谈音/视频下载后在这里加载。</p>
+            </div>
+
+            <div class="controls">
+              <div class="ctl-group">
+                <label>速度</label>
+                <div class="speeds" id="speeds">
+                  <button data-rate="0.5">0.5×</button>
+                  <button data-rate="0.65">0.65×</button>
+                  <button data-rate="0.75">0.75×</button>
+                  <button data-rate="0.85">0.85×</button>
+                  <button data-rate="1" class="active">1×</button>
+                </div>
+              </div>
+              <div class="ctl-group">
+                <label>循环</label>
+                <button class="toggle" id="loopToggle">A-B 循环：关</button>
+              </div>
+            </div>
+            <div class="transport">
+              <button class="btn" id="playSeg">▶ 播放此片段</button>
+              <button class="btn" id="pauseBtn">⏸ 暂停</button>
+              <button class="btn ghost" id="markStart">设为起点</button>
+              <button class="btn ghost" id="markEnd">设为终点</button>
+              <span class="seg-time" id="segTime">—</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2 id="segTitle">片段</h2>
+              <select id="segSelect"></select>
+            </div>
+            <div class="transcript" id="transcript">选择一个片段开始。</div>
+          </div>
+        </div>
+
+        <!-- Right: 5-step flow + recorder -->
+        <div class="col">
+          <div class="card">
+            <div class="card-head"><h2>五步跟读法</h2><span class="tiny">同一片段建议练满一周</span></div>
+            <ol class="steps" id="steps">
+              <li data-step="0"><label><input type="checkbox" /> <b>1 纯听</b> · 不看字，抓节奏与语调（听 2 遍）</label></li>
+              <li data-step="1"><label><input type="checkbox" /> <b>2 对文听读</b> · 看字幕跟读，标出连读/重音</label></li>
+              <li data-step="2"><label><input type="checkbox" /> <b>3 同步影子</b> · 滞后半秒同步说，贴合声音</label></li>
+              <li data-step="3"><label><input type="checkbox" /> <b>4 脱稿影子</b> · 不看字，只靠听</label></li>
+              <li data-step="4"><label><input type="checkbox" /> <b>5 录音对比</b> · 录下自己，和原声并排听</label></li>
+            </ol>
+            <div class="progress-line"><div id="stepFill"></div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h2>录音 & 音色对比</h2></div>
+            <canvas id="scope" height="90"></canvas>
+            <div class="meters">
+              <div class="meter"><span>音高</span><b id="pitchVal">— Hz</b></div>
+              <div class="meter"><span>音量</span><b id="volVal">—</b></div>
+            </div>
+            <div class="transport">
+              <button class="btn btn-primary" id="recBtn">● 录音</button>
+              <button class="btn" id="playRec" disabled>▶ 回放我的</button>
+              <button class="btn" id="compareBtn" disabled>⇄ 原声→我的 对比</button>
+              <button class="btn ghost" id="dlRec" disabled>下载</button>
+            </div>
+            <p class="tiny" id="timbreTip">音色贴近的关键不是单纯音高，而是<strong>节奏、停顿、词末辅音、句子重音</strong>。先让"曲线形状"接近，再抠音色。</p>
+          </div>
+
+          <button class="btn btn-primary big" id="finishSession">完成今天这次训练 ✓</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <section class="view" id="view-dashboard" hidden>
+      <div class="stats">
+        <div class="stat"><div class="stat-num" id="stStreak">0</div><div class="stat-lbl">当前连续天数 🔥</div></div>
+        <div class="stat"><div class="stat-num" id="stBest">0</div><div class="stat-lbl">最长连续</div></div>
+        <div class="stat"><div class="stat-num" id="stDays">0</div><div class="stat-lbl">累计练习天数</div></div>
+        <div class="stat"><div class="stat-num" id="stMin">0</div><div class="stat-lbl">累计分钟</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>今日目标</h2><span class="tiny" id="goalLbl"></span></div>
+        <div class="progress-line big"><div id="goalFill"></div></div>
+        <div class="tiny" id="todayMin"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>练习热力图（近 12 周）</h2></div>
+        <div class="heatmap" id="heatmap"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>各片段练习次数</h2></div>
+        <div id="segStats"></div>
+      </div>
+    </section>
+
+    <!-- ===================== SEGMENTS ===================== -->
+    <section class="view" id="view-segments" hidden>
+      <div class="card">
+        <div class="card-head"><h2>管理片段</h2><button class="btn" id="addSeg">+ 新增片段</button></div>
+        <p class="tiny">载入你的视频后，播放到目标位置，用练习页的"设为起点/终点"校准时间戳。片段自动保存在本地浏览器。</p>
+        <div id="segList"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>导入 / 导出</h2></div>
+        <div class="transport">
+          <button class="btn" id="exportBtn">导出全部数据</button>
+          <button class="btn" id="importBtn">导入数据</button>
+          <input type="file" id="importFile" accept="application/json" hidden />
+        </div>
+        <p class="tiny">导出包含你的片段、进度与连续记录（不含录音）。换设备时可迁移。</p>
+      </div>
+    </section>
+
+    <!-- ===================== SETTINGS ===================== -->
+    <section class="view" id="view-settings" hidden>
+      <div class="card">
+        <div class="card-head"><h2>每日督促</h2></div>
+        <div class="row">
+          <label>每日目标（分钟）</label>
+          <input type="number" id="goalInput" min="5" max="120" step="5" />
+        </div>
+        <div class="row">
+          <label>每日提醒时间</label>
+          <input type="time" id="remindInput" />
+          <button class="btn" id="enableNotif">开启浏览器提醒</button>
+        </div>
+        <p class="tiny">提醒会在页面打开时于设定时间弹出通知；关闭页面时浏览器无法主动推送，届时靠"连续天数"和打开页面时的横幅督促你。</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>关于</h2></div>
+        <p class="tiny">JobsShadow 是一个纯前端、数据留在你本机的影子跟读训练器。默认预置了 1995 年访谈中著名的 "taste" 片段文本，其余片段可自行补充。<br><br>只练一个人、练透，比换来换去更有效。祝你早日拿下那口 "no taste" 的腔调。</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
